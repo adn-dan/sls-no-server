@@ -1,10 +1,23 @@
 # Simple Scrobbler
 
-[<img src="https://github.com/simple-last-fm-scrobbler/sls/blob/master/art/icon_new.svg" alt="Icon" height="60">](https://github.com/simple-last-fm-scrobbler/sls/blob/master/art/icon_new.svg) [![GitHub release](https://img.shields.io/github/release/simple-last-fm-scrobbler/sls)](https://github.com/simple-last-fm-scrobbler/sls/releases/) [![License](http://img.shields.io/:license-apache-blue.svg?style=round)](LICENSE.md) [![Pull Requests](https://img.shields.io/github/issues-pr/simple-last-fm-scrobbler/sls.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/pulls) [![Discord](https://img.shields.io/discord/722441132260458496.svg?logo=discord&style=round)](https://discord.gg/KqYGnAX)
+[<img src="https://github.com/simple-last-fm-scrobbler/sls/blob/master/art/icon_new.svg" alt="Icon" height="60">](https://github.com/simple-last-fm-scrobbler/sls/blob/master/art/icon_new.svg) [![GitHub release](https://img.shields.io/github/release/simple-last-fm-scrobbler/sls)](https://github.com/simple-last-fm-scrobbler/sls/releases/) [![License](http://img.shields.io/:license-apache-blue.svg?style=round)](LICENSE.md) [![Pull Requests](https://img.shields.io/github/issues-pr/simple-last-fm-scrobbler/sls.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/pulls)
 
 [![Feature Requests](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls/feature%20request.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/labels/feature%20request) [![App Support Issues](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls/app%20support.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/labels/app%20support) [![Bugs Issues](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls/bugs.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/labels/bugs) [![Issues](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/issues)
 
-> **Note :** Les modifications récentes de ce dépôt sont 100% vibe codé — générées et intégrées avec Claude Code sans intervention humaine dans le code.
+> **Note:** Recent changes to this repository are 100% vibe coded — generated and integrated with Claude Code without any human intervention in the code.
+
+## What's new — v1.8.0
+
+### Export scrobbles to CSV
+
+Accessible via **Options → Export scrobbles (CSV)**, this feature lets you export your entire local scrobble cache as a CSV file directly to your device, without relying on any external service.
+
+ * **Columns exported:** Date, Artist, Track, Album, Album Artist, Duration, Source, Rating
+ * **Android 10+ (API 29+):** file saved to `Downloads/` via MediaStore (no storage permission required)
+ * **Android 5–9:** classic external storage
+ * A notification shows the path to the generated file once the export is complete
+
+---
 
 Simple Scrobbler (SS) is a simple app that scrobbles music listened to on an Android phone. Scrobbling means submitting listening information to Last.fm (and optionally/additionally Libre.fm and ListenBrainz) when you play a track, and you can then get music recommendations and view your listening history and statistics at Last.fm.
 
@@ -73,16 +86,7 @@ Simple Scrobbler (SS) is a simple app that scrobbles music listened to on an And
  * Auto-correct scrobbles
  * Enable/Disable Music Apps
  * Themes
- * **Export scrobbles to CSV** *(new)*
-
-### Export scrobbles to CSV
-
-A new feature accessible via **Options → Export scrobbles (CSV)** allows you to export your entire local scrobble cache as a CSV file directly to your device, without relying on any external service.
-
- * **Columns exported :** Date, Artist, Track, Album, Album Artist, Duration, Source, Rating
- * **Android 10+ (API 29+) :** file saved to `Downloads/` via MediaStore (no storage permission required)
- * **Android 5–9 :** file saved to external storage using the classic method
- * A notification is displayed once the export is complete, showing the path to the generated file
+ * **Export scrobbles to CSV** *(new — see top)*
 
 ### Supported languages
 
