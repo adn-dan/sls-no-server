@@ -48,14 +48,19 @@ import android.os.PowerManager;
 import android.provider.MediaStore;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TimeZone;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -71,15 +76,6 @@ import com.adam.aslfms.service.NetApp;
 import com.adam.aslfms.service.ScrobblingService;
 import com.adam.aslfms.util.enums.NetworkOptions;
 import com.adam.aslfms.util.enums.PowerOptions;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.util.Calendar;
-import java.util.Set;
-import java.util.TimeZone;
 
 import static android.content.Context.POWER_SERVICE;
 
@@ -751,7 +747,7 @@ public class Util {
 
         ScrobblesDatabase db = new ScrobblesDatabase(ctx);
         db.open();
-        Cursor cursor = db.fetchAllTracksCursor(com.adam.aslfms.util.enums.SortField.DATE_DESC);
+        Cursor cursor = db.fetchAllTracksCursor(com.adam.aslfms.util.enums.SortField.WHEN_DESC);
 
         if (cursor == null) {
             db.close();
