@@ -31,7 +31,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
-import android.support.v4.app.NavUtils;
+import androidx.core.app.NavUtils;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -54,6 +54,7 @@ public class OptionsActivity extends AppCompatPreferenceActivity {
     private static final String KEY_BATTERY = "ao_battery";
     private static final String KEY_PLUGGED = "ao_plugged";
     private static final String KEY_EXPORT_DB = "export_database";
+    private static final String KEY_EXPORT_CSV = "export_csv";
     private static final String KEY_NOTIFICATION_PRIORITY = "notification_priority";
     private static final String KEY_LANGUAGES_LIST = "languages_list";
     private static final String KEY_PERMISSION_SHOW = "permission_activity_show";
@@ -135,6 +136,11 @@ public class OptionsActivity extends AppCompatPreferenceActivity {
     @SuppressWarnings("deprecation")
     public boolean onPreferenceTreeClick(PreferenceScreen prefScreen,
                                          Preference pref) {
+
+        if (KEY_EXPORT_CSV.equals(pref.getKey())) {
+            Util.exportScrobblesToCSV(getApplicationContext());
+            return true;
+        }
 
         if (mBatteryOptions.onClick(pref)) {
             update();

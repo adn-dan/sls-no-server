@@ -28,6 +28,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -40,12 +41,24 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.PowerManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
+import android.provider.MediaStore;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -532,7 +545,8 @@ public class Util {
             NotificationCompat.Builder notificationBuilder = null;
             Notification notification = null;
 
-            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, targetIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, targetIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 notificationBuilder = new NotificationCompat.Builder(context, POPUP_CHANNEL_ID);
                 notificationBuilder.setCategory(Notification.CATEGORY_SERVICE);
@@ -721,5 +735,116 @@ public class Util {
             return false;
         }
         return true;
+    }
+
+    private static String csvEscape(String value) {
+        if (value == null) return "";
+        if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
+
+    public static void exportScrobblesToCSV(Context ctx) {
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+        String filename = "scrobbles_" + timestamp + ".csv";
+
+        ScrobblesDatabase db = new ScrobblesDatabase(ctx);
+        db.open();
+        Cursor cursor = db.fetchAllTracksCursor(com.adam.aslfms.util.enums.SortField.DATE_DESC);
+
+        if (cursor == null) {
+            db.close();
+            Log.e(TAG, "exportScrobblesToCSV: cursor is null");
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Date,Artist,Track,Album,AlbumArtist,Duration(s),Source,Rating\n");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            long whenplayed = cursor.getLong(cursor.getColumnIndexOrThrow("whenplayed"));
+            String date = sdf.format(new Date(whenplayed * 1000L));
+            String artist = cursor.getString(cursor.getColumnIndexOrThrow("artist"));
+            String track  = cursor.getString(cursor.getColumnIndexOrThrow("track"));
+            String album  = cursor.getString(cursor.getColumnIndexOrThrow("album"));
+            String albumArtist = cursor.getString(cursor.getColumnIndexOrThrow("albumartist"));
+            int duration  = cursor.getInt(cursor.getColumnIndexOrThrow("duration"));
+            String source = cursor.getString(cursor.getColumnIndexOrThrow("source"));
+            String rating = cursor.getString(cursor.getColumnIndexOrThrow("rating"));
+
+            sb.append(csvEscape(date)).append(',')
+              .append(csvEscape(artist)).append(',')
+              .append(csvEscape(track)).append(',')
+              .append(csvEscape(album)).append(',')
+              .append(csvEscape(albumArtist)).append(',')
+              .append(duration).append(',')
+              .append(csvEscape(source)).append(',')
+              .append(csvEscape(rating)).append('\n');
+
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+
+        String csvContent = sb.toString();
+        boolean success = false;
+        String outputPath = filename;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10+ : utiliser MediaStore, aucune permission requise
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Downloads.DISPLAY_NAME, filename);
+            values.put(MediaStore.Downloads.MIME_TYPE, "text/csv");
+            values.put(MediaStore.Downloads.IS_PENDING, 1);
+            Uri collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            Uri itemUri = ctx.getContentResolver().insert(collection, values);
+            if (itemUri != null) {
+                try (OutputStream os = ctx.getContentResolver().openOutputStream(itemUri);
+                     OutputStreamWriter writer = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
+                    writer.write(csvContent);
+                    success = true;
+                    outputPath = "Téléchargements/" + filename;
+                } catch (IOException e) {
+                    Log.e(TAG, "exportScrobblesToCSV: write failed", e);
+                    ctx.getContentResolver().delete(itemUri, null, null);
+                }
+                if (success) {
+                    values.clear();
+                    values.put(MediaStore.Downloads.IS_PENDING, 0);
+                    ctx.getContentResolver().update(itemUri, values, null, null);
+                }
+            }
+        } else {
+            // Android 9 et inférieur : écriture directe dans Téléchargements
+            if (!checkExternalPermission(ctx)) {
+                myNotify(ctx,
+                        ctx.getResources().getString(R.string.warning),
+                        ctx.getResources().getString(R.string.permission_external_storage),
+                        81235,
+                        new Intent(ctx, PermissionsActivity.class));
+                return;
+            }
+            File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File csvFile = new File(downloadsDir, filename);
+            try (FileOutputStream fos = new FileOutputStream(csvFile);
+                 OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+                writer.write(csvContent);
+                success = true;
+                outputPath = csvFile.getAbsolutePath();
+            } catch (IOException e) {
+                Log.e(TAG, "exportScrobblesToCSV: write failed", e);
+            }
+        }
+
+        if (success) {
+            myNotify(ctx,
+                    ctx.getResources().getString(R.string.export_csv_success),
+                    outputPath,
+                    57110,
+                    new Intent(ctx, SettingsActivity.class));
+        }
     }
 }
