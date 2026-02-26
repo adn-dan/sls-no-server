@@ -230,6 +230,9 @@
     <!-- BEGIN developer options -->
     <string name="developer_options">Developer Options</string>
     <string name="export_database">Export Database</string>
+    <string name="export_csv_title">Export scrobbles (CSV)</string>
+    <string name="export_csv_summary">Save all scrobbles to a CSV file in Downloads</string>
+    <string name="export_csv_success">CSV export complete</string>
     <!-- BEGIN developer options -->
     <!-- BEGIN permissions activity -->
     <string name="permission_activate">Activate</string>

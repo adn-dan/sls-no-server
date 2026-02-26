@@ -27,8 +27,8 @@ import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v4.util.Pair;
+import androidx.annotation.RequiresApi;
+import androidx.core.util.Pair;
 import android.util.Log;
 
 import java.util.HashMap;

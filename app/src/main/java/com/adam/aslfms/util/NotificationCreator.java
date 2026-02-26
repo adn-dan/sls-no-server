@@ -29,7 +29,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
 import com.adam.aslfms.R;
@@ -98,19 +98,21 @@ public class NotificationCreator {
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }*/
 
+        int pendingFlags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+
         Intent targetIntent = new Intent(context, SettingsActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, targetIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, targetIntent, pendingFlags);
 
         // Heart intent
         Intent heartIntent = new Intent(context, ScrobblingService.class);
         heartIntent.setAction(ScrobblingService.ACTION_HEART);
-        PendingIntent heartPendingIntent = PendingIntent.getService(context, 0, heartIntent, 0);
+        PendingIntent heartPendingIntent = PendingIntent.getService(context, 0, heartIntent, pendingFlags);
         NotificationCompat.Action heartAction = new NotificationCompat.Action.Builder(R.drawable.ic_heart, context.getString(R.string.heart_title), heartPendingIntent).build();
 
         // Copy intent
         Intent copyIntent = new Intent(context, ScrobblingService.class);
         copyIntent.setAction(ScrobblingService.ACTION_COPY);
-        PendingIntent copyPendingIntent = PendingIntent.getService(context, 0, copyIntent, 0);
+        PendingIntent copyPendingIntent = PendingIntent.getService(context, 0, copyIntent, pendingFlags);
         NotificationCompat.Action copyAction = new NotificationCompat.Action.Builder(R.drawable.ic_content_copy, context.getString(R.string.copy_title), copyPendingIntent).build();
 
         // notification builder

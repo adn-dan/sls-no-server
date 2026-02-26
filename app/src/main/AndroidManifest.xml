@@ -10,23 +10,34 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
         android:description="@string/about_text"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme">
-        <activity android:name=".PermissionsActivity"></activity>
+
+        <activity
+            android:name=".PermissionsActivity"
+            android:exported="false" />
         <!-- begin the start/launch activity -->
         <activity
             android:name=".SettingsActivity"
+            android:exported="true"
             android:icon="@drawable/ic_icon_full"
             android:label="@string/app_name">
             <intent-filter>
@@ -38,67 +49,74 @@
         <!-- other activities -->
         <activity
             android:name=".UserCredsListActivity"
+            android:exported="false"
             android:parentActivityName=".SettingsActivity">
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
+                android:name="androidx.PARENT_ACTIVITY"
                 android:value=".SettingsActivity" />
         </activity>
         <activity
             android:name=".MusicAppsActivity"
+            android:exported="false"
             android:parentActivityName=".SettingsActivity">
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
+                android:name="androidx.PARENT_ACTIVITY"
                 android:value=".SettingsActivity" />
         </activity>
         <activity
             android:name=".OptionsActivity"
+            android:exported="false"
             android:parentActivityName=".SettingsActivity">
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
+                android:name="androidx.PARENT_ACTIVITY"
                 android:value=".SettingsActivity" />
         </activity>
         <activity
             android:name=".UserCredActivity"
+            android:exported="false"
             android:parentActivityName=".UserCredsListActivity">
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
+                android:name="androidx.PARENT_ACTIVITY"
                 android:value=".UserCredsListActivity" />
         </activity>
         <activity
             android:name=".StatusActivity"
+            android:exported="false"
             android:parentActivityName=".SettingsActivity">
-
-            <!-- android:theme="@style/Theme.AppCompat.NoActionBar"> -->
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
+                android:name="androidx.PARENT_ACTIVITY"
                 android:value=".SettingsActivity" />
         </activity>
         <activity
             android:name=".ViewScrobbleCacheActivity"
+            android:exported="false"
             android:parentActivityName=".SettingsActivity">
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
+                android:name="androidx.PARENT_ACTIVITY"
                 android:value=".SettingsActivity" />
         </activity>
         <activity
             android:name=".ViewCorrectionRulesActivity"
+            android:exported="false"
             android:parentActivityName=".SettingsActivity">
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
+                android:name="androidx.PARENT_ACTIVITY"
                 android:value=".SettingsActivity" />
         </activity>
         <activity
             android:name=".ChangeThemeActivity"
+            android:exported="false"
             android:parentActivityName=".SettingsActivity">
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
+                android:name="androidx.PARENT_ACTIVITY"
                 android:value=".SettingsActivity" />
         </activity> <!-- end other activities -->
         <!-- begin the services -->
         <service
             android:name=".service.ScrobblingService"
             android:enabled="true"
-            android:exported="false">
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback">
             <intent-filter>
                 <action android:name="com.adam.aslfms.service.startscrobbler" />
                 <action android:name="com.adam.aslfms.service.playstatechanged" />
@@ -106,7 +124,7 @@
                 <action android:name="com.adam.aslfms.service.clearcreds" />
                 <action android:name="com.adam.aslfms.service.justscrobble" />
                 <action android:name="com.adam.aslfms.service.heart" />
-                <action android:name="com.adam.aslfms.service.copy" />z
+                <action android:name="com.adam.aslfms.service.copy" />
             </intent-filter>
         </service>
         <service
@@ -118,6 +136,18 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service> <!-- end the services -->
+
+        <!-- FileProvider for secure file sharing (CSV export) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
+
         <!-- begin the receivers -->
         <receiver
             android:name=".receiver.BootReceiver"
@@ -173,7 +203,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="com.real.IMP.metachanged" />
-                <!-- don't know if these two works -->
                 <action android:name="com.real.IMP.playbackcomplete" />
                 <action android:name="com.real.IMP.playstatechanged" />
             </intent-filter>
@@ -201,8 +230,6 @@
                 <action android:name="com.sonyericsson.music.metachanged" />
                 <action android:name="com.sonyericsson.music.playbackcomplete" />
                 <action android:name="com.sonyericsson.music.playstatechanged" />
-
-                <!-- from https://github.com/Ambroos/Xperia-Scrobbler-2013-Compatibility/ -->
                 <action android:name="com.sonyericsson.music.playbackcontrol.ACTION_TRACK_STARTED" />
                 <action android:name="com.sonyericsson.music.playbackcontrol.ACTION_PAUSED" />
             </intent-filter>
@@ -220,8 +247,6 @@
             android:name=".receiver.SamsungMusicReceiver"
             android:enabled="true"
             android:exported="true">
-
-            <!-- doesn't work -->
             <intent-filter>
                 <action android:name="com.samsung.sec.android.MusicPlayer.metachanged" />
                 <action android:name="com.samsung.sec.android.MusicPlayer.playbackcomplete" />
@@ -319,9 +344,6 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-
-                <!-- https://www.orangebikelabs.com/products/orangesqueeze/broadcast-intents -->
-                <!-- ISSUE! SEE playername intent, hence, won't be taking the time to track multiple players -->
                 <action android:name="com.orangebikelabs.orangesqueeze.metachanged" />
                 <action android:name="com.orangebikelabs.orangesqueeze.playstatechanged" />
             </intent-filter>

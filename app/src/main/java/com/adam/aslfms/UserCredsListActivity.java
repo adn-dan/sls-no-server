@@ -31,7 +31,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
-import android.support.v4.app.NavUtils;
+import androidx.core.app.NavUtils;
 import android.view.MenuItem;
 
 import com.adam.aslfms.service.NetApp;
