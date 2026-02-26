@@ -4,18 +4,18 @@
 
 [![Feature Requests](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls/feature%20request.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/labels/feature%20request) [![App Support Issues](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls/app%20support.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/labels/app%20support) [![Bugs Issues](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls/bugs.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/labels/bugs) [![Issues](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/issues)
 
-> **Note :** Les modifications récentes de ce dépôt sont 100% vibe codé — générées et intégrées avec Claude Code sans intervention humaine dans le code.
+> **Note:** Recent changes to this repository are 100% vibe coded — generated and integrated with Claude Code without any human intervention in the code.
 
-## Nouveautés — v1.8.0
+## What's new — v1.8.0
 
 ### Export scrobbles to CSV
 
-Accessible via **Options → Export scrobbles (CSV)**, cette fonctionnalité permet d'exporter l'intégralité du cache local de scrobbles sous forme de fichier CSV directement sur l'appareil, sans dépendre d'aucun service externe.
+Accessible via **Options → Export scrobbles (CSV)**, this feature lets you export your entire local scrobble cache as a CSV file directly to your device, without relying on any external service.
 
- * **Colonnes exportées :** Date, Artist, Track, Album, Album Artist, Duration, Source, Rating
- * **Android 10+ (API 29+) :** fichier enregistré dans `Downloads/` via MediaStore (aucune permission requise)
- * **Android 5–9 :** stockage externe classique
- * Une notification affiche le chemin du fichier généré à la fin de l'export
+ * **Columns exported:** Date, Artist, Track, Album, Album Artist, Duration, Source, Rating
+ * **Android 10+ (API 29+):** file saved to `Downloads/` via MediaStore (no storage permission required)
+ * **Android 5–9:** classic external storage
+ * A notification shows the path to the generated file once the export is complete
 
 ---
 
