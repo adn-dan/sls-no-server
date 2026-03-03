@@ -134,21 +134,21 @@ public class ViewCorrectionRulesActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_clear_rules:
-                Util.confirmDialog(this,
-                        "Are you sure you want to delete all rules?",
-                        R.string.remove,
-                        android.R.string.cancel,
-                        (dialog, which) -> {
-                            database.deleteAllCorrectionRules();
-                            if (updateRulesCursor != null)
-                                updateRulesCursor.requery();
-                        });
-                return true;
-            case R.id.menu_add_rule:
-                viewRuleDetails(-1);
-                return true;
+        int id = item.getItemId();
+        if (id == R.id.menu_clear_rules) {
+            Util.confirmDialog(this,
+                    "Are you sure you want to delete all rules?",
+                    R.string.remove,
+                    android.R.string.cancel,
+                    (dialog, which) -> {
+                        database.deleteAllCorrectionRules();
+                        if (updateRulesCursor != null)
+                            updateRulesCursor.requery();
+                    });
+            return true;
+        } else if (id == R.id.menu_add_rule) {
+            viewRuleDetails(-1);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -166,21 +166,21 @@ public class ViewCorrectionRulesActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        switch (item.getItemId()) {
-            case R.id.menu_edit_rule:
-                viewRuleDetails(info.id);
-                return true;
-            case R.id.menu_delete_rule:
-                Util.confirmDialog(this,
-                        "Are you sure you want to delete this rule?",
-                        R.string.remove,
-                        android.R.string.cancel,
-                        (dialog, which) -> {
-                            database.deleteCorrectionRule((int) info.id);
-                            if (updateRulesCursor != null)
-                                updateRulesCursor.requery();
-                        });
-                return true;
+        int id = item.getItemId();
+        if (id == R.id.menu_edit_rule) {
+            viewRuleDetails(info.id);
+            return true;
+        } else if (id == R.id.menu_delete_rule) {
+            Util.confirmDialog(this,
+                    "Are you sure you want to delete this rule?",
+                    R.string.remove,
+                    android.R.string.cancel,
+                    (dialog, which) -> {
+                        database.deleteCorrectionRule((int) info.id);
+                        if (updateRulesCursor != null)
+                            updateRulesCursor.requery();
+                    });
+            return true;
         }
         return super.onContextItemSelected(item);
     }

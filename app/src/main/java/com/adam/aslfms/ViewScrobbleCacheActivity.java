@@ -205,36 +205,36 @@ public class ViewScrobbleCacheActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_scrobble_now:
-                if (mNetApp == null) {
-                    Util.scrobbleAllIfPossible(this, mScrobblesCursor.getCount());
-                } else {
-                    Util.scrobbleIfPossible(this, mNetApp,
-                            mScrobblesCursor.getCount());
-                }
-                return true;
-            case R.id.menu_clear_cache:
-                if (mNetApp == null) {
-                    Util.deleteAllScrobblesFromAllCaches(this, mDb,
-                            mScrobblesCursor);
-                } else {
-                    Util.deleteAllScrobblesFromCache(this, mDb, mNetApp,
-                            mScrobblesCursor);
-                }
-                return true;
-            case R.id.menu_clear_completed_cache:
-                if (mNetApp == null) {
-                    Util.deleteAllScrobbledTracksFromAllCaches(this, mDb,
-                            mScrobblesCursor);
-                } else {
-                    Util.deleteAllScrobbledTracksFromCache(this, mDb, mNetApp,
-                            mScrobblesCursor);
-                }
-                return true;
-            case R.id.menu_change_sort_order:
-                viewChangeSortOrder();
-                return true;
+        int id = item.getItemId();
+        if (id == R.id.menu_scrobble_now) {
+            if (mNetApp == null) {
+                Util.scrobbleAllIfPossible(this, mScrobblesCursor.getCount());
+            } else {
+                Util.scrobbleIfPossible(this, mNetApp,
+                        mScrobblesCursor.getCount());
+            }
+            return true;
+        } else if (id == R.id.menu_clear_cache) {
+            if (mNetApp == null) {
+                Util.deleteAllScrobblesFromAllCaches(this, mDb,
+                        mScrobblesCursor);
+            } else {
+                Util.deleteAllScrobblesFromCache(this, mDb, mNetApp,
+                        mScrobblesCursor);
+            }
+            return true;
+        } else if (id == R.id.menu_clear_completed_cache) {
+            if (mNetApp == null) {
+                Util.deleteAllScrobbledTracksFromAllCaches(this, mDb,
+                        mScrobblesCursor);
+            } else {
+                Util.deleteAllScrobbledTracksFromCache(this, mDb, mNetApp,
+                        mScrobblesCursor);
+            }
+            return true;
+        } else if (id == R.id.menu_change_sort_order) {
+            viewChangeSortOrder();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -253,20 +253,19 @@ public class ViewScrobbleCacheActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        switch (item.getItemId()) {
-            case R.id.menu_delete_scrobble:
-                if (mNetApp == null) {
-                    Util.deleteScrobbleFromAllCaches(this, mDb, mScrobblesCursor,
-                            (int) info.id);
-                } else {
-                    Util.deleteScrobbleFromCache(this, mDb, mNetApp,
-                            mScrobblesCursor, (int) info.id);
-                }
-
-                return true;
-            case R.id.menu_show_scrobble_details:
-                viewSCDetails((int) info.id);
-                return true;
+        int id = item.getItemId();
+        if (id == R.id.menu_delete_scrobble) {
+            if (mNetApp == null) {
+                Util.deleteScrobbleFromAllCaches(this, mDb, mScrobblesCursor,
+                        (int) info.id);
+            } else {
+                Util.deleteScrobbleFromCache(this, mDb, mNetApp,
+                        mScrobblesCursor, (int) info.id);
+            }
+            return true;
+        } else if (id == R.id.menu_show_scrobble_details) {
+            viewSCDetails((int) info.id);
+            return true;
         }
         return super.onContextItemSelected(item);
     }

@@ -109,31 +109,30 @@ public class StatusActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case MENU_SCROBBLE_NOW_ID:
-                int numInCache = mDb.queryNumberOfUnscrobbledTracks();
-                Util.scrobbleAllIfPossible(this, numInCache);
-                return true;
-            case R.id.MENU_RESET_STATS_ID:
-                for (NetApp napp : NetApp.values()) {
-                    settings.clearSubmissionStats(napp);
-                    // TODO: refill data on clearStats
-                    /**StatusFragment fragment = (StatusFragment) getSupportFragmentManager().findFragmentByTag("StatusFragment");
-                     if (fragment != null){
-                     fragment.fillData();
-                     }*/
-                }
-                this.finish();
-                startActivity(getIntent());
-                return true;
-            case R.id.MENU_VIEW_CACHE_ID:
-                Intent i = new Intent(this, ViewScrobbleCacheActivity.class);
-                i.putExtra("viewall", true);
-                startActivity(i);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+        if (id == MENU_SCROBBLE_NOW_ID) {
+            int numInCache = mDb.queryNumberOfUnscrobbledTracks();
+            Util.scrobbleAllIfPossible(this, numInCache);
+            return true;
+        } else if (id == R.id.MENU_RESET_STATS_ID) {
+            for (NetApp napp : NetApp.values()) {
+                settings.clearSubmissionStats(napp);
+                // TODO: refill data on clearStats
+                /**StatusFragment fragment = (StatusFragment) getSupportFragmentManager().findFragmentByTag("StatusFragment");
+                 if (fragment != null){
+                 fragment.fillData();
+                 }*/
+            }
+            this.finish();
+            startActivity(getIntent());
+            return true;
+        } else if (id == R.id.MENU_VIEW_CACHE_ID) {
+            Intent i = new Intent(this, ViewScrobbleCacheActivity.class);
+            i.putExtra("viewall", true);
+            startActivity(i);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setupViewPager(ViewPager viewPager) {

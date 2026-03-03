@@ -82,33 +82,25 @@ public class ChangeThemeActivity extends AppCompatActivity {
     }
 
     public void onRadioButtonClicked(View view){
-        switch (view.getId()) {
-            case R.id.default_theme:
-                settings.setAppTheme(R.style.AppTheme);
-                break;
-            case R.id.default_theme_dark:
-                settings.setAppTheme(R.style.AppTheme_Dark);
-                break;
-            case R.id.lastfm_theme:
-                settings.setAppTheme(R.style.AppThemeLastFm);
-                break;
-            case R.id.lastfm_theme_dark:
-                settings.setAppTheme(R.style.AppThemeLastFmDark);
-                break;
-            case R.id.librefm_theme:
-                settings.setAppTheme(R.style.AppThemeLibreFm);
-                break;
-            case R.id.librefm_theme_dark:
-                settings.setAppTheme(R.style.AppThemeLibreFmDark);
-                break;
-            case R.id.listenbrainz_theme:
-                settings.setAppTheme(R.style.AppThemeListenBrainz);
-                break;
-            case R.id.listenbrainz_theme_dark:
-                settings.setAppTheme(R.style.AppThemeListenBrainzDark);
-                break;
-            default:
-                settings.setAppTheme(R.style.AppTheme);
+        int id = view.getId();
+        if (id == R.id.default_theme) {
+            settings.setAppTheme(R.style.AppTheme);
+        } else if (id == R.id.default_theme_dark) {
+            settings.setAppTheme(R.style.AppTheme_Dark);
+        } else if (id == R.id.lastfm_theme) {
+            settings.setAppTheme(R.style.AppThemeLastFm);
+        } else if (id == R.id.lastfm_theme_dark) {
+            settings.setAppTheme(R.style.AppThemeLastFmDark);
+        } else if (id == R.id.librefm_theme) {
+            settings.setAppTheme(R.style.AppThemeLibreFm);
+        } else if (id == R.id.librefm_theme_dark) {
+            settings.setAppTheme(R.style.AppThemeLibreFmDark);
+        } else if (id == R.id.listenbrainz_theme) {
+            settings.setAppTheme(R.style.AppThemeListenBrainz);
+        } else if (id == R.id.listenbrainz_theme_dark) {
+            settings.setAppTheme(R.style.AppThemeListenBrainzDark);
+        } else {
+            settings.setAppTheme(R.style.AppTheme);
         }
         setTheme(settings.getAppTheme());
         Log.d(TAG, view.getResources().getResourceName(settings.getAppTheme()));

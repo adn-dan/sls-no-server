@@ -150,15 +150,15 @@ public class MusicAppsActivity extends AppCompatPreferenceActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-            case R.id.MENU_CLEAR_APPS_ID:
-                MusicAPI.clearDatabase(this);
-                update();
-                return true;
+        int id = item.getItemId();
+        // Respond to the action bar's Up/Home button
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
+        } else if (id == R.id.MENU_CLEAR_APPS_ID) {
+            MusicAPI.clearDatabase(this);
+            update();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

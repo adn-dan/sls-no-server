@@ -184,16 +184,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_about:
-                new AboutDialog(this).show();
-                return true;
-            case R.id.menu_whats_new:
-                new WhatsNewDialog(this).show();
-                return true;
-            case R.id.menu_exit:
-                handleAppExit();
-                return true;
+        int id = item.getItemId();
+        if (id == R.id.menu_about) {
+            new AboutDialog(this).show();
+            return true;
+        } else if (id == R.id.menu_whats_new) {
+            new WhatsNewDialog(this).show();
+            return true;
+        } else if (id == R.id.menu_exit) {
+            handleAppExit();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
