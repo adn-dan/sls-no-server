@@ -1,3 +1,9 @@
+- 1.9.0 (2026-03-03)
+  * Android 16 (API 36) compatibility
+  * Export scrobble history as CSV
+  * Automatic APK build & GitHub Release via CI/CD
+  * AGP 9.x / Gradle 9 compatibility fixes
+
 Visit,
 https://github.com/simple-last-fm-scrobbler/sls
 For more details.
