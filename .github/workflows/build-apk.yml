@@ -16,11 +16,11 @@ jobs:
       - name: Checkout du code
         uses: actions/checkout@v4
 
-      # AGP 9.0.0 nécessite Java 17 minimum.
-      - name: Configuration JDK 17
+      # AGP 9.0.0 nécessite Java 21.
+      - name: Configuration JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       # Cache le wrapper Gradle et les dépendances pour accélérer les builds suivants.
@@ -36,6 +36,13 @@ jobs:
 
       - name: Rendre gradlew exécutable
         run: chmod +x gradlew
+
+      # SDK 36 (Android 16) n'est pas toujours pré-installé sur le runner.
+      - name: Accepter les licences Android SDK
+        run: yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+      - name: Installer Android SDK 36
+        run: $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
       - name: Compilation du debug APK
         run: ./gradlew assembleDebug --no-daemon --stacktrace
