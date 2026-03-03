@@ -65,7 +65,7 @@ jobs:
       - name: Extraire la version
         id: get_version
         run: |
-          VERSION=$(grep 'versionName' app/build.gradle | head -1 | sed 's/.*versionName "\(.*\)".*/\1/')
+          VERSION=$(grep 'versionName' app/build.gradle | head -1 | awk -F'"' '{print $2}')
           echo "version=v${VERSION}" >> $GITHUB_OUTPUT
 
       # Crée une GitHub Release avec l'APK sur master, les tags v*, ou cette branche de release.
