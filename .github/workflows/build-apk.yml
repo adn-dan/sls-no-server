@@ -1,0 +1,50 @@
+name: Build APK
+
+# Déclenché sur chaque push (toutes les branches) et manuellement via l'UI GitHub.
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  build-debug:
+    name: Build Debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      # AGP 9.0.0 nécessite Java 17 minimum.
+      - name: Configuration JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Cache le wrapper Gradle et les dépendances pour accélérer les builds suivants.
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/dists
+          key: gradle-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', 'build.gradle', 'app/build.gradle') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Rendre gradlew exécutable
+        run: chmod +x gradlew
+
+      - name: Compilation du debug APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      # L'APK sera téléchargeable depuis l'onglet Actions > run > Artifacts.
+      - name: Upload de l'APK en artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk-${{ github.run_number }}
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+          if-no-files-found: error
