@@ -1,119 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_gravity="center_vertical">
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/theme_title"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:layout_marginBottom="16dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/theme_light"
-                android:textSize="24sp" />
+        <!-- Brand selection -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/theme_color"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="?attr/colorPrimary"
+            android:layout_marginBottom="8dp" />
 
-            <RadioButton
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggle_brand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/default_theme"
-                android:layout_width="match_parent"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="false"
-                android:clickable="true"
-                android:onClick="onRadioButtonClicked"
-                android:text="@string/theme_default"
-                android:textSize="18sp" />
+                android:text="@string/theme_default" />
 
-            <RadioButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/lastfm_theme"
-                android:layout_width="match_parent"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="false"
-                android:clickable="true"
-                android:onClick="onRadioButtonClicked"
-                android:text="@string/settings_prefix_last_fm"
-                android:textSize="18sp" />
+                android:text="@string/settings_prefix_last_fm" />
 
-            <RadioButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/librefm_theme"
-                android:layout_width="match_parent"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="false"
-                android:clickable="true"
-                android:onClick="onRadioButtonClicked"
-                android:text="@string/settings_prefix_libre_fm"
-                android:textSize="18sp" />
+                android:text="@string/settings_prefix_libre_fm" />
 
-            <RadioButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/listenbrainz_theme"
-                android:layout_width="match_parent"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="false"
-                android:clickable="true"
-                android:onClick="onRadioButtonClicked"
-                android:text="@string/settings_prefix_listenbrainz"
-                android:textSize="18sp" />
+                android:text="@string/settings_prefix_listenbrainz" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
 
-            <TextView
-                android:layout_width="match_parent"
+        <!-- Dark mode selection -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/theme_mode"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="?attr/colorPrimary"
+            android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggle_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:selectionRequired="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/mode_light"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/theme_dark"
-                android:textSize="24sp" />
+                android:text="@string/theme_light" />
 
-            <RadioButton
-                android:id="@+id/default_theme_dark"
-                android:layout_width="match_parent"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/mode_dark"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="false"
-                android:clickable="true"
-                android:onClick="onRadioButtonClicked"
-                android:text="@string/theme_default"
-                android:textSize="18sp" />
+                android:text="@string/theme_dark" />
 
-            <RadioButton
-                android:id="@+id/lastfm_theme_dark"
-                android:layout_width="match_parent"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/mode_system"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="false"
-                android:clickable="true"
-                android:onClick="onRadioButtonClicked"
-                android:text="@string/settings_prefix_last_fm"
-                android:textSize="18sp" />
+                android:text="@string/theme_system" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
 
-            <RadioButton
-                android:id="@+id/librefm_theme_dark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="false"
-                android:clickable="true"
-                android:onClick="onRadioButtonClicked"
-                android:text="@string/settings_prefix_libre_fm"
-                android:textSize="18sp" />
-
-            <RadioButton
-                android:id="@+id/listenbrainz_theme_dark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="false"
-                android:clickable="true"
-                android:onClick="onRadioButtonClicked"
-                android:text="@string/settings_prefix_listenbrainz"
-                android:textSize="18sp" />
-
+        <!-- Keep legacy hidden radio buttons for backward compat (not shown to user) -->
+        <RadioGroup
+            android:id="@+id/legacy_radio_group"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone">
+            <RadioButton android:id="@+id/default_theme_dark" />
+            <RadioButton android:id="@+id/lastfm_theme_dark" />
+            <RadioButton android:id="@+id/librefm_theme_dark" />
+            <RadioButton android:id="@+id/listenbrainz_theme_dark" />
         </RadioGroup>
+
     </LinearLayout>
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

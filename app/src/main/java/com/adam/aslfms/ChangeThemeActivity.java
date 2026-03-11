@@ -1,42 +1,20 @@
 /**
  * This file is part of Simple Scrobbler.
- * <p>
- * https://github.com/simple-last-fm-scrobbler/sls
- * <p>
- * Copyright 2011 Simple Scrobbler Team
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
-
-
-
 package com.adam.aslfms;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.adam.aslfms.util.AppSettings;
 import com.adam.aslfms.util.MyContextWrapper;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 
-/**
- * @author a93h
- * @since 1.5.8
- */
 public class ChangeThemeActivity extends AppCompatActivity {
     private static final String TAG = "ChangeThemeActivity";
     private AppSettings settings;
@@ -51,68 +29,74 @@ public class ChangeThemeActivity extends AppCompatActivity {
         settings = new AppSettings(this);
         Resources.Theme theme = super.getTheme();
         theme.applyStyle(settings.getAppTheme(), true);
-        //Log.d(TAG, getResources().getResourceName(settings.getAppTheme()));
-        // you could also use a switch if you have many themes that could apply
         return theme;
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.theme_options);
         settings = new AppSettings(this);
         setTheme(settings.getAppTheme());
+        setupBrandToggle();
+        setupModeToggle();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    public void onRadioButtonClicked(View view){
-        switch (view.getId()) {
-            case R.id.default_theme:
-                settings.setAppTheme(R.style.AppTheme);
-                break;
-            case R.id.default_theme_dark:
-                settings.setAppTheme(R.style.AppTheme_Dark);
-                break;
-            case R.id.lastfm_theme:
-                settings.setAppTheme(R.style.AppThemeLastFm);
-                break;
-            case R.id.lastfm_theme_dark:
-                settings.setAppTheme(R.style.AppThemeLastFmDark);
-                break;
-            case R.id.librefm_theme:
-                settings.setAppTheme(R.style.AppThemeLibreFm);
-                break;
-            case R.id.librefm_theme_dark:
-                settings.setAppTheme(R.style.AppThemeLibreFmDark);
-                break;
-            case R.id.listenbrainz_theme:
-                settings.setAppTheme(R.style.AppThemeListenBrainz);
-                break;
-            case R.id.listenbrainz_theme_dark:
-                settings.setAppTheme(R.style.AppThemeListenBrainzDark);
-                break;
-            default:
-                settings.setAppTheme(R.style.AppTheme);
+    private void setupBrandToggle() {
+        MaterialButtonToggleGroup brandGroup = findViewById(R.id.toggle_brand);
+        int currentTheme = settings.getAppTheme();
+        if (currentTheme == R.style.AppThemeLastFm || currentTheme == R.style.AppThemeLastFmDark) {
+            brandGroup.check(R.id.lastfm_theme);
+        } else if (currentTheme == R.style.AppThemeLibreFm || currentTheme == R.style.AppThemeLibreFmDark) {
+            brandGroup.check(R.id.librefm_theme);
+        } else if (currentTheme == R.style.AppThemeListenBrainz || currentTheme == R.style.AppThemeListenBrainzDark) {
+            brandGroup.check(R.id.listenbrainz_theme);
+        } else {
+            brandGroup.check(R.id.default_theme);
         }
-        setTheme(settings.getAppTheme());
-        Log.d(TAG, view.getResources().getResourceName(settings.getAppTheme()));
-        Intent intent = new Intent(this, SettingsActivity.class);
+        brandGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) return;
+            applyTheme(checkedId);
+        });
+    }
+
+    private void setupModeToggle() {
+        MaterialButtonToggleGroup modeGroup = findViewById(R.id.toggle_mode);
+        int nightMode = AppCompatDelegate.getDefaultNightMode();
+        if (nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
+            modeGroup.check(R.id.mode_dark);
+        } else if (nightMode == AppCompatDelegate.MODE_NIGHT_NO) {
+            modeGroup.check(R.id.mode_light);
+        } else {
+            modeGroup.check(R.id.mode_system);
+        }
+        modeGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) return;
+            if (checkedId == R.id.mode_dark) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else if (checkedId == R.id.mode_light) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            }
+        });
+    }
+
+    private void applyTheme(int brandId) {
+        int themeRes;
+        if (brandId == R.id.lastfm_theme) {
+            themeRes = R.style.AppThemeLastFm;
+        } else if (brandId == R.id.librefm_theme) {
+            themeRes = R.style.AppThemeLibreFm;
+        } else if (brandId == R.id.listenbrainz_theme) {
+            themeRes = R.style.AppThemeListenBrainz;
+        } else {
+            themeRes = R.style.AppTheme;
+        }
+        settings.setAppTheme(themeRes);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        finish();
     }
 }

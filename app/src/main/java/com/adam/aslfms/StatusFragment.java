@@ -27,12 +27,12 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.adam.aslfms.service.NetApp;
@@ -46,12 +46,6 @@ import com.adam.aslfms.util.enums.SubmissionType;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by bryan on 6/6/15.
- *
- * @author Bryan
- * @since 1.4.9
- */
 public class StatusFragment extends Fragment {
 
     private static final String TAG = "StatusFragment";
@@ -64,15 +58,15 @@ public class StatusFragment extends Fragment {
 
     private int mProfilePageLinkPosition = -1;
 
-    private ListView mListView;
+    private RecyclerView mRecyclerView;
+    private StatusAdapter mAdapter;
+    private List<Pair> mItems = new ArrayList<>();
 
     public static StatusFragment newInstance(int netApp) {
         Bundle args = new Bundle();
         args.putSerializable(EXTRA_NETAPP, netApp);
-
         StatusFragment fragment = new StatusFragment();
         fragment.setArguments(args);
-
         return fragment;
     }
 
@@ -80,8 +74,21 @@ public class StatusFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_status, container, false);
 
-        mListView = (ListView) rootView.findViewById(R.id.stats_list);
-        mListView.setOnItemClickListener((parent, view, position, id) -> {
+        mRecyclerView = rootView.findViewById(R.id.stats_list);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        mAdapter = new StatusAdapter(mItems);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+            @Override
+            public void onChildViewAttachedToWindow(View view) {}
+
+            @Override
+            public void onChildViewDetachedFromWindow(View view) {}
+        });
+
+        // Profile link click
+        mAdapter.setOnItemClickListener((position) -> {
             if (position == mProfilePageLinkPosition
                     && settings.getAuthStatus(mNetApp) == AuthStatus.AUTHSTATUS_OK) {
                 String url = mNetApp.getProfileUrl(settings);
@@ -105,14 +112,10 @@ public class StatusFragment extends Fragment {
             getActivity().finish();
         }
         mNetApp = NetApp.fromValue(snapp);
-
         settings = new AppSettings(getActivity());
-
-        // TODO: remove
         mDb = new ScrobblesDatabase(getActivity());
         mDb.open();
     }
-
 
     @Override
     public void onDestroy() {
@@ -123,24 +126,21 @@ public class StatusFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
         getActivity().unregisterReceiver(onChange);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
         IntentFilter ifs = new IntentFilter();
         ifs.addAction(ScrobblingService.BROADCAST_ONSTATUSCHANGED);
         ifs.addAction(ScrobblingService.BROADCAST_ONAUTHCHANGED);
         getActivity().registerReceiver(onChange, ifs);
-
         fillData();
     }
 
     protected void fillData() {
-        List<Pair> list = new ArrayList<Pair>();
+        mItems.clear();
         int numInCache = mDb.queryNumberOfScrobbles(mNetApp);
 
         // auth
@@ -150,11 +150,9 @@ public class StatusFragment extends Fragment {
             auth.setValue(settings.getUsername(mNetApp));
         } else {
             auth.setKey(Util.getStatusSummary(getContext(), settings, mNetApp));
-            auth
-                    .setValue(Util.getStatusSummary(getActivity(), settings, mNetApp,
-                            false));
+            auth.setValue(Util.getStatusSummary(getActivity(), settings, mNetApp, false));
         }
-        list.add(auth);
+        mItems.add(auth);
 
         // link to profile
         Pair prof_link = new Pair();
@@ -164,51 +162,46 @@ public class StatusFragment extends Fragment {
         } else {
             prof_link.setValue(getString(R.string.not_logged_in));
         }
-        list.add(prof_link);
-        mProfilePageLinkPosition = list.size() - 1;
+        mItems.add(prof_link);
+        mProfilePageLinkPosition = mItems.size() - 1;
 
         // scrobble
         Pair scrobble = new Pair();
         scrobble.setKey(getSubmissionStatusKey(SubmissionType.SCROBBLE));
         scrobble.setValue(getSubmissionStatusValue(SubmissionType.SCROBBLE));
-        list.add(scrobble);
+        mItems.add(scrobble);
 
         // np
         Pair np = new Pair();
         np.setKey(getSubmissionStatusKey(SubmissionType.NP));
         np.setValue(getSubmissionStatusValue(SubmissionType.NP));
-        list.add(np);
+        mItems.add(np);
 
         // scrobbles in cache
         Pair cache = new Pair();
         cache.setKey(getString(R.string.scrobbles_cache_nonum));
         cache.setValue(Integer.toString(numInCache));
-        list.add(cache);
+        mItems.add(cache);
 
         // scrobble stats
         Pair scstats = new Pair();
         scstats.setKey(getString(R.string.stats_scrobbles));
-        scstats.setValue(Integer.toString(settings.getNumberOfSubmissions(
-                mNetApp, SubmissionType.SCROBBLE)));
-        list.add(scstats);
+        scstats.setValue(Integer.toString(settings.getNumberOfSubmissions(mNetApp, SubmissionType.SCROBBLE)));
+        mItems.add(scstats);
 
         // np stats
         Pair npstats = new Pair();
         npstats.setKey(getString(R.string.stats_nps));
-        npstats.setValue(Integer.toString(settings.getNumberOfSubmissions(
-                mNetApp, SubmissionType.NP)));
-        list.add(npstats);
+        npstats.setValue(Integer.toString(settings.getNumberOfSubmissions(mNetApp, SubmissionType.NP)));
+        mItems.add(npstats);
 
         // total scrobbles
         Pair tsStats = new Pair();
         tsStats.setKey(mNetApp.getName());
         tsStats.setValue(settings.getTotalScrobbles(mNetApp));
-        list.add(tsStats);
+        mItems.add(tsStats);
 
-        ArrayAdapter<Pair> adapter = new MyArrayAdapter(getActivity(),
-                R.layout.status_info_row, R.id.key, list);
-
-        mListView.setAdapter(adapter);
+        if (mAdapter != null) mAdapter.notifyDataSetChanged();
     }
 
     private String getSubmissionStatusKey(SubmissionType stype) {
@@ -230,7 +223,6 @@ public class StatusFragment extends Fragment {
             when = Util.timeFromLocalMillis(getActivity(), time);
             what = "\n" + settings.getLastSubmissionInfo(mNetApp, stype);
         }
-
         return when + what;
     }
 
@@ -251,7 +243,6 @@ public class StatusFragment extends Fragment {
     }
 
     private BroadcastReceiver onChange = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getExtras() != null) {
@@ -272,73 +263,70 @@ public class StatusFragment extends Fragment {
         return mNetApp;
     }
 
+    // ---- Pair data model ----
+
     private static class Pair {
         private String key;
         private String value;
 
-        private Pair() {
-            super();
-        }
+        private Pair() {}
 
-        private Pair(String key, String value) {
-            super();
-            this.key = key;
-            this.value = value;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
+        public String getKey() { return key; }
+        public void setKey(String key) { this.key = key; }
+        public String getValue() { return value; }
+        public void setValue(String value) { this.value = value; }
     }
 
-    private class MyArrayAdapter extends ArrayAdapter<Pair> {
+    // ---- RecyclerView Adapter ----
 
-        public MyArrayAdapter(Context context, int resource,
-                              int textViewResourceId, List<Pair> list) {
-            super(context, resource, textViewResourceId, list);
+    interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+    private static class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder> {
+
+        private final List<Pair> mItems;
+        private OnItemClickListener mListener;
+
+        StatusAdapter(List<Pair> items) {
+            mItems = items;
         }
 
-        private class ViewHolderItem {
-			private TextView keyView;
-			private TextView valueView;
-		}
-
-		@Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolderItem viewHolderItem;
-			if (convertView == null) {
-				convertView = LayoutInflater.from(getContext()).inflate(
-				        R.layout.status_info_row, parent, false);
-				viewHolderItem = new ViewHolderItem();
-				viewHolderItem.keyView = (TextView) convertView.findViewById(R.id.key);
-				viewHolderItem.valueView = (TextView) convertView.findViewById(R.id.value);
-                convertView.setTag(viewHolderItem);
-			} else {
-				viewHolderItem = (ViewHolderItem) convertView.getTag();
-			}
-			View view = convertView;
-			Pair item = this.getItem(position);
-
-            TextView keyView = viewHolderItem.keyView;
-            keyView.setText(item.getKey());
-
-            TextView valueView = viewHolderItem.valueView;
-            valueView.setText(item.getValue());
-
-            return view;
+        void setOnItemClickListener(OnItemClickListener listener) {
+            mListener = listener;
         }
 
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.status_info_row, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            Pair item = mItems.get(position);
+            holder.keyView.setText(item.getKey());
+            holder.valueView.setText(item.getValue());
+            holder.itemView.setOnClickListener(v -> {
+                if (mListener != null) mListener.onItemClick(position);
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return mItems.size();
+        }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            TextView keyView;
+            TextView valueView;
+
+            ViewHolder(View itemView) {
+                super(itemView);
+                keyView = itemView.findViewById(R.id.key);
+                valueView = itemView.findViewById(R.id.value);
+            }
+        }
     }
 }

@@ -666,4 +666,117 @@ public class ScrobblesDatabase {
         c.close();
         return rule;
     }
+
+
+    // -------------------------------------------------------------------------
+    // Statistics queries
+    // -------------------------------------------------------------------------
+
+    /** Total number of scrobbles, optionally filtered by a minimum timestamp. */
+    public int queryStatsTotalScrobbles(long sinceTimestamp) {
+        if (mDb == null || !mDb.isOpen()) open();
+        String where = sinceTimestamp > 0 ? " WHERE whenplayed > " + sinceTimestamp : "";
+        Cursor c = mDb.rawQuery("SELECT COUNT(_id) FROM scrobbles" + where, null);
+        int count = 0;
+        if (c.moveToFirst()) count = c.getInt(0);
+        c.close();
+        return count;
+    }
+
+    /** Number of distinct artists, optionally filtered by a minimum timestamp. */
+    public int queryStatsUniqueArtists(long sinceTimestamp) {
+        if (mDb == null || !mDb.isOpen()) open();
+        String where = sinceTimestamp > 0 ? " WHERE whenplayed > " + sinceTimestamp : "";
+        Cursor c = mDb.rawQuery("SELECT COUNT(DISTINCT artist) FROM scrobbles" + where, null);
+        int count = 0;
+        if (c.moveToFirst()) count = c.getInt(0);
+        c.close();
+        return count;
+    }
+
+    /** Number of distinct tracks (track+artist), optionally filtered. */
+    public int queryStatsUniqueTracks(long sinceTimestamp) {
+        if (mDb == null || !mDb.isOpen()) open();
+        String where = sinceTimestamp > 0 ? " WHERE whenplayed > " + sinceTimestamp : "";
+        Cursor c = mDb.rawQuery("SELECT COUNT(DISTINCT track || '|||' || artist) FROM scrobbles" + where, null);
+        int count = 0;
+        if (c.moveToFirst()) count = c.getInt(0);
+        c.close();
+        return count;
+    }
+
+    /** Sum of duration (seconds) for all scrobbles with duration > 0. */
+    public long queryStatsTotalListeningTime(long sinceTimestamp) {
+        if (mDb == null || !mDb.isOpen()) open();
+        String where = "duration > 0" + (sinceTimestamp > 0 ? " AND whenplayed > " + sinceTimestamp : "");
+        Cursor c = mDb.rawQuery("SELECT SUM(duration) FROM scrobbles WHERE " + where, null);
+        long total = 0;
+        if (c.moveToFirst() && !c.isNull(0)) total = c.getLong(0);
+        c.close();
+        return total;
+    }
+
+    /** Top artists by play count, up to limit results, optionally filtered. */
+    public List<TopItem> queryStatsTopArtists(int limit, long sinceTimestamp) {
+        if (mDb == null || !mDb.isOpen()) open();
+        String where = sinceTimestamp > 0 ? " WHERE whenplayed > " + sinceTimestamp : "";
+        Cursor c = mDb.rawQuery(
+                "SELECT artist, COUNT(*) as play_count FROM scrobbles" + where +
+                " GROUP BY artist ORDER BY play_count DESC LIMIT " + limit, null);
+        List<TopItem> items = new ArrayList<>();
+        while (c.moveToNext()) {
+            items.add(new TopItem(c.getString(0), c.getInt(1)));
+        }
+        c.close();
+        return items;
+    }
+
+    /** Top tracks (track - artist) by play count, up to limit results, optionally filtered. */
+    public List<TopItem> queryStatsTopTracks(int limit, long sinceTimestamp) {
+        if (mDb == null || !mDb.isOpen()) open();
+        String where = sinceTimestamp > 0 ? " WHERE whenplayed > " + sinceTimestamp : "";
+        Cursor c = mDb.rawQuery(
+                "SELECT track || ' \u2014 ' || artist as display_name, COUNT(*) as play_count FROM scrobbles" + where +
+                " GROUP BY track, artist ORDER BY play_count DESC LIMIT " + limit, null);
+        List<TopItem> items = new ArrayList<>();
+        while (c.moveToNext()) {
+            items.add(new TopItem(c.getString(0), c.getInt(1)));
+        }
+        c.close();
+        return items;
+    }
+
+    /** Top albums by play count, up to limit results, optionally filtered. */
+    public List<TopItem> queryStatsTopAlbums(int limit, long sinceTimestamp) {
+        if (mDb == null || !mDb.isOpen()) open();
+        String baseWhere = "album != ''";
+        if (sinceTimestamp > 0) baseWhere += " AND whenplayed > " + sinceTimestamp;
+        Cursor c = mDb.rawQuery(
+                "SELECT album || ' \u2014 ' || artist as display_name, COUNT(*) as play_count FROM scrobbles WHERE " + baseWhere +
+                " GROUP BY album, artist ORDER BY play_count DESC LIMIT " + limit, null);
+        List<TopItem> items = new ArrayList<>();
+        while (c.moveToNext()) {
+            items.add(new TopItem(c.getString(0), c.getInt(1)));
+        }
+        c.close();
+        return items;
+    }
+
+    /** Load all statistics for the given period (sinceTimestamp=0 means all time). */
+    public StatisticsData loadStatistics(long sinceTimestamp) {
+        if (mDb == null || !mDb.isOpen()) open();
+        StatisticsData data = new StatisticsData();
+        data.totalScrobbles = queryStatsTotalScrobbles(sinceTimestamp);
+        data.uniqueArtists = queryStatsUniqueArtists(sinceTimestamp);
+        data.uniqueTracks = queryStatsUniqueTracks(sinceTimestamp);
+        data.totalListeningTimeSeconds = queryStatsTotalListeningTime(sinceTimestamp);
+        data.topArtists = queryStatsTopArtists(10, sinceTimestamp);
+        data.topTracks = queryStatsTopTracks(10, sinceTimestamp);
+        data.topAlbums = queryStatsTopAlbums(10, sinceTimestamp);
+        long now = System.currentTimeMillis() / 1000;
+        data.scrobblesLast24h = queryStatsTotalScrobbles(now - 86400L);
+        data.scrobblesLast7d = queryStatsTotalScrobbles(now - 7 * 86400L);
+        data.scrobblesLast30d = queryStatsTotalScrobbles(now - 30 * 86400L);
+        return data;
+    }
 }

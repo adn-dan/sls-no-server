@@ -26,10 +26,11 @@ import android.content.res.Resources;
 import android.database.SQLException;
 import android.os.Bundle;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -61,8 +62,6 @@ public class StatusActivity extends AppCompatActivity {
         settings = new AppSettings(this);
         Resources.Theme theme = super.getTheme();
         theme.applyStyle(settings.getAppTheme(), true);
-        //Log.d(TAG, getResources().getResourceName(settings.getAppTheme()));
-        // you could also use a switch if you have many themes that could apply
         return theme;
     }
 
@@ -84,19 +83,22 @@ public class StatusActivity extends AppCompatActivity {
             mDb = null;
         }
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        if (viewPager != null) {
-            setupViewPager(viewPager);
-        }
+        ViewPager2 viewPager = findViewById(R.id.viewpager);
+        TabLayout tabLayout = findViewById(R.id.tabs);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        if (viewPager != null) {
+            TabAdapter adapter = buildAdapter();
+            viewPager.setAdapter(adapter);
+            new TabLayoutMediator(tabLayout, viewPager,
+                    (tab, position) -> tab.setText(adapter.getTitle(position)))
+                    .attach();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mDb.close();
+        if (mDb != null) mDb.close();
     }
 
     @Override
@@ -108,20 +110,14 @@ public class StatusActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
         switch (item.getItemId()) {
             case MENU_SCROBBLE_NOW_ID:
-                int numInCache = mDb.queryNumberOfUnscrobbledTracks();
+                int numInCache = mDb != null ? mDb.queryNumberOfUnscrobbledTracks() : 0;
                 Util.scrobbleAllIfPossible(this, numInCache);
                 return true;
             case R.id.MENU_RESET_STATS_ID:
                 for (NetApp napp : NetApp.values()) {
                     settings.clearSubmissionStats(napp);
-                    // TODO: refill data on clearStats
-                    /**StatusFragment fragment = (StatusFragment) getSupportFragmentManager().findFragmentByTag("StatusFragment");
-                     if (fragment != null){
-                     fragment.fillData();
-                     }*/
                 }
                 this.finish();
                 startActivity(getIntent());
@@ -136,43 +132,41 @@ public class StatusActivity extends AppCompatActivity {
         }
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        TabAdapter adapter = new TabAdapter(getSupportFragmentManager());
-
+    private TabAdapter buildAdapter() {
+        TabAdapter adapter = new TabAdapter(getSupportFragmentManager(), getLifecycle());
         for (NetApp napp : NetApp.values()) {
-            if(settings.getAuthStatus(napp) != AuthStatus.AUTHSTATUS_NOAUTH) {
+            if (settings.getAuthStatus(napp) != AuthStatus.AUTHSTATUS_NOAUTH) {
                 adapter.addFragment(StatusFragment.newInstance(napp.getValue()), napp.getName());
             }
         }
-        viewPager.setAdapter(adapter);
+        return adapter;
     }
 
-    static class TabAdapter extends FragmentPagerAdapter {
+    static class TabAdapter extends FragmentStateAdapter {
         private final List<Fragment> mFragments = new ArrayList<>();
-        private final List<String> mFragmentTitles = new ArrayList<>();
+        private final List<String> mTitles = new ArrayList<>();
 
-        public TabAdapter(FragmentManager fm) {
-            super(fm);
+        public TabAdapter(FragmentManager fm, androidx.lifecycle.Lifecycle lifecycle) {
+            super(fm, lifecycle);
         }
 
         public void addFragment(Fragment fragment, String title) {
             mFragments.add(fragment);
-            mFragmentTitles.add(title);
+            mTitles.add(title);
+        }
+
+        public String getTitle(int position) {
+            return mTitles.get(position);
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public Fragment createFragment(int position) {
             return mFragments.get(position);
         }
 
         @Override
-        public int getCount() {
+        public int getItemCount() {
             return mFragments.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitles.get(position);
         }
     }
 }

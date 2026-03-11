@@ -1,6 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
+    <!-- Brand colors -->
     <color name="LastFm">#ED524F</color>
     <color name="LibreFm">#F37800</color>
     <color name="ListenBrainz">#575382</color>
+
+    <!-- Default theme (Material 3 blue-grey) -->
+    <color name="md_theme_primary">#4A6572</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#CCE4F0</color>
+    <color name="md_theme_onPrimaryContainer">#051F2A</color>
+    <color name="md_theme_secondary">#4F606B</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#D2E5F0</color>
+    <color name="md_theme_onSecondaryContainer">#0A1D28</color>
+    <color name="md_theme_tertiary">#615D7E</color>
+    <color name="md_theme_onTertiary">#FFFFFF</color>
+    <color name="md_theme_tertiaryContainer">#E7DEFF</color>
+    <color name="md_theme_onTertiaryContainer">#1D1836</color>
+    <color name="md_theme_error">#BA1A1A</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+    <color name="md_theme_errorContainer">#FFDAD6</color>
+    <color name="md_theme_onErrorContainer">#410002</color>
+    <color name="md_theme_background">#F8FAFB</color>
+    <color name="md_theme_onBackground">#191C1E</color>
+    <color name="md_theme_surface">#F8FAFB</color>
+    <color name="md_theme_onSurface">#191C1E</color>
+    <color name="md_theme_surfaceVariant">#DBE4E9</color>
+    <color name="md_theme_onSurfaceVariant">#3F484D</color>
+    <color name="md_theme_outline">#6F797E</color>
+    <color name="md_theme_outlineVariant">#BFC8CD</color>
+    <color name="md_theme_shadow">#000000</color>
+    <color name="md_theme_scrim">#000000</color>
+    <color name="md_theme_inverseSurface">#2E3133</color>
+    <color name="md_theme_inverseOnSurface">#EFF1F3</color>
+    <color name="md_theme_inversePrimary">#9BCBDE</color>
+
+    <!-- LastFm theme (red) -->
+    <color name="md_theme_lastfm_primary">#B42D2B</color>
+    <color name="md_theme_lastfm_onPrimary">#FFFFFF</color>
+    <color name="md_theme_lastfm_primaryContainer">#FFDAD7</color>
+    <color name="md_theme_lastfm_onPrimaryContainer">#410001</color>
+
+    <!-- LibreFm theme (orange) -->
+    <color name="md_theme_librefm_primary">#8B4900</color>
+    <color name="md_theme_librefm_onPrimary">#FFFFFF</color>
+    <color name="md_theme_librefm_primaryContainer">#FFDCC1</color>
+    <color name="md_theme_librefm_onPrimaryContainer">#2C1400</color>
+
+    <!-- ListenBrainz theme (purple) -->
+    <color name="md_theme_listenbrainz_primary">#5B539A</color>
+    <color name="md_theme_listenbrainz_onPrimary">#FFFFFF</color>
+    <color name="md_theme_listenbrainz_primaryContainer">#E4DFFF</color>
+    <color name="md_theme_listenbrainz_onPrimaryContainer">#150D35</color>
 </resources>
