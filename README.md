@@ -1,6 +1,6 @@
 # Simple Scrobbler
 
-## Checkout my new project [LibrestFM](https://github.com/adn-dan/LibrestFM)  
+## Check out my new project [LibrestFM](https://github.com/adn-dan/LibrestFM)  
 
 [<img src="https://github.com/simple-last-fm-scrobbler/sls/blob/master/art/icon_new.svg" alt="Icon" height="60">](https://github.com/simple-last-fm-scrobbler/sls/blob/master/art/icon_new.svg) [![GitHub release](https://img.shields.io/github/release/simple-last-fm-scrobbler/sls)](https://github.com/simple-last-fm-scrobbler/sls/releases/) [![License](http://img.shields.io/:license-apache-blue.svg?style=round)](LICENSE.md) [![Pull Requests](https://img.shields.io/github/issues-pr/simple-last-fm-scrobbler/sls.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/pulls)
 
