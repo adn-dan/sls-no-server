@@ -1,5 +1,7 @@
 # Simple Scrobbler
 
+## Checkout my new project [LibrestFM](https://github.com/adn-dan/LibrestFM)  
+
 [<img src="https://github.com/simple-last-fm-scrobbler/sls/blob/master/art/icon_new.svg" alt="Icon" height="60">](https://github.com/simple-last-fm-scrobbler/sls/blob/master/art/icon_new.svg) [![GitHub release](https://img.shields.io/github/release/simple-last-fm-scrobbler/sls)](https://github.com/simple-last-fm-scrobbler/sls/releases/) [![License](http://img.shields.io/:license-apache-blue.svg?style=round)](LICENSE.md) [![Pull Requests](https://img.shields.io/github/issues-pr/simple-last-fm-scrobbler/sls.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/pulls)
 
 [![Feature Requests](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls/feature%20request.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/labels/feature%20request) [![App Support Issues](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls/app%20support.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/labels/app%20support) [![Bugs Issues](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls/bugs.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/labels/bugs) [![Issues](https://img.shields.io/github/issues/simple-last-fm-scrobbler/sls.svg?style=round)](https://github.com/simple-last-fm-scrobbler/sls/issues)
@@ -48,15 +50,6 @@ Simple Scrobbler (SS) is a simple app that scrobbles music listened to on an And
     * **Reason (required)**: (Scrobble is love, scrobble is life.)
 
 ## Download
-
-[<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"
-    alt="Get it on PlayStore"
-    height="80">
-    ](https://play.google.com/store/apps/details?id=com.adam.aslfms&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-    alt="Get it on F-Droid"
-    height="80">](https://f-droid.org/packages/com.adam.aslfms)
-
 
 #### [Release & Pre-Release Downloads](https://github.com/simple-last-fm-scrobbler/sls/releases)
 
